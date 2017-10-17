@@ -13,7 +13,8 @@ PImage restartNormal;
 PImage startHovered;
 PImage startNormal;
 PImage title;
-int soldierSpeed,soldierWalk,soldierY,cabbageX,cabbageY,lifeX=10,groundhogSpeed,groundhogDownY, groundhogDisplay,groundhogDirection,digTimer;
+PImage groundhogDisplay;
+int soldierSpeed,soldierWalk,soldierY,cabbageX,cabbageY,lifeX=10,groundhogSpeed,groundhogDownY,groundhogDirection,digTimer;
 final int GAME_START=0,GAME_RUN=1,GAME_LOSE=2,STAND=3,GROUNDHOGDOWN=4;
 int gameState,digDirection,image;
 float groundhogY=80,digDuration,groundhogX=320,playerGridX,playerGridY;
@@ -66,9 +67,9 @@ switch(gameState){
 switch(gameState){
   case GAME_RUN:
  image(backGround,0,0);
-  image(soil,0,160);//soil
-    image(cabbage,cabbageX,cabbageY);//cabbage
-noStroke();
+ image(soil,0,160);//soil
+ image(cabbage,cabbageX,cabbageY);//cabbage
+ noStroke();
   fill(124,204,25);
  rect(0,145,640,15);// Grass
  image(life,lifeX-70,10);//life
@@ -78,18 +79,35 @@ noStroke();
  arc(590,50,130,130,0,360);
  fill(253,184,19);
  arc(590,50,120,120,0,360);
- 
-image(groundHog,groundhogX,groundhogY);//groundhog
+if(groundhogX%80==0&&groundhogY%80==0){
+ groundhogDisplay=groundHog;
+ }
+image(groundhogDisplay,groundhogX,groundhogY);//groundhog
 if(digTimer==0&&keyPressed&&key==CODED){
   switch(keyCode){
 
     case LEFT:
-    groundHog=groundhogLeft;
-    digDirection=LEFT;
-    digTimer=15;
-    
-   
+    if(leftState==true){
+      groundhogDisplay=groundhogLeft;
+      digDirection=LEFT;
+      digTimer=15;
+      break;
+    }
+    case RIGHT:
+   if(rightState==true){
+     groundhogDisplay=groundhogRight;
+     digDirection=RIGHT;
+     digTimer=15;
+     break;
+    }
+    case DOWN:
+    if(downState==true){
+      groundhogDisplay=groundhogDown;
+      digDirection=DOWN;
+      digTimer=15;
+      break;
   }
+}
 }
 
 
@@ -97,26 +115,45 @@ else if(digTimer>0){
   digTimer--;
   switch(digDirection){
     case LEFT:
-    if(groundhogX>0){
-   
-        if(digTimer==0){
-          groundHog=groundhogLeft;
-            playerGridX--;
-            groundhogX=80*playerGridX;
-      
-    }
-   
-        else{
-          groundHog=groundhogLeft;
-              groundhogX+=((float(digTimer)/15)-playerGridX-1);
+         if(groundhogX>0){
+             groundhogDisplay=groundhogLeft;
+              if(digTimer==0){
+                playerGridX--;
+                groundhogX=80*playerGridX;
+                  }
+              else{
+                groundhogX+=((float(digTimer)/15)-playerGridX-1);
+                
               } }
-    
-  }  
+              break;
+    case RIGHT:
+          if(groundhogX<=560){
+            groundhogDisplay=groundhogRight;
+                if(digTimer==0){
+                  playerGridX++;
+                  groundhogX=80*playerGridX;
+                }
+                else{
+                  groundhogX-=((float(digTimer)/15)-playerGridX-1);
+                }}
+                break;
+                
+    case DOWN:
+          if(groundhogY<400){
+            groundhogDisplay=groundhogDown;
+              if(digTimer==0){
+                playerGridY++;
+                groundhogY=80*playerGridY;
+              }
+              else{
+                groundhogY-=((float(digTimer)/15)-playerGridY-1);
+              }
+          }
+              break;
+  
   }
-if(leftState==false){
-
-  image(groundHog,groundhogX,groundhogY);
 }
+
 
 
 print(groundhogX);
@@ -162,7 +199,7 @@ switch(gameState){
    break;
    
 }
-print(digTimer);
+print(playerGridX);
 }
 
 void keyPressed(){
